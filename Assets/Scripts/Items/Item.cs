@@ -6,49 +6,58 @@ using UnityEngine;
 
 namespace TestProject.Resources
 {
-	public class Item : MonoBehaviour
-	{
-		[SerializeField] private ItemData _itemData;
-		[SerializeField] private ColliderTrigger2D _itemCollider;
+    public class Item : MonoBehaviour
+    {
+        [SerializeField] private ItemData _itemData;
+        [SerializeField] private ColliderTrigger2D _itemCollider;
 
-		public event Action<Item> OnItemPicked;
+        public event Action<Item> OnItemPicked;
+        
+        public ItemData ItemData => _itemData;
 
-		public ItemData ItemData => _itemData;
-		
-		private void Awake()
-		{
-			if (_itemCollider != null)
-				return;
-			
-			Debug.LogWarning($"[{nameof(Item)}] {nameof(Awake)}, field {nameof(_itemCollider)} is null!");
-		}
+        private void Awake()
+        {
+            if (_itemCollider != null)
+                return;
 
-		private void OnEnable() => EnableItemInteraction();
+            Debug.LogWarning($"[{nameof(Item)}] {nameof(Awake)}, field {nameof(_itemCollider)} is null!");
+        }
 
-		private void OnDisable() => DisableItemInteraction();
+        private void OnEnable()
+        {
+            EnableItemInteraction();
+        }
 
-		private void OnDestroy() => DisableItemInteraction();
+        private void OnDisable()
+        {
+            DisableItemInteraction();
+        }
 
-		private void EnableItemInteraction()
-		{
-			if(_itemCollider != null)
-				_itemCollider.OnTriggerEnter += OnItemColliderTriggerEnterHandler;
-		}
-		
-		private void DisableItemInteraction()
-		{
-			if(_itemCollider != null)
-				_itemCollider.OnTriggerEnter -= OnItemColliderTriggerEnterHandler;
-		}
+        private void OnDestroy()
+        {
+            DisableItemInteraction();
+        }
 
-		private void OnItemColliderTriggerEnterHandler(Collider2D other)
-		{
-			Player playerComponents = other.GetComponentInParent<Player>() ?? other.GetComponentInChildren<Player>();
-			
-			if(playerComponents == null)
-				return;
-			
-			OnItemPicked?.Invoke(this);
-		}
-	}
+        private void EnableItemInteraction()
+        {
+            if (_itemCollider != null)
+                _itemCollider.OnTriggerEnter += OnItemColliderTriggerEnterHandler;
+        }
+
+        private void DisableItemInteraction()
+        {
+            if (_itemCollider != null)
+                _itemCollider.OnTriggerEnter -= OnItemColliderTriggerEnterHandler;
+        }
+
+        private void OnItemColliderTriggerEnterHandler(Collider2D other)
+        {
+            Player playerComponents = other.GetComponentInParent<Player>() ?? other.GetComponentInChildren<Player>();
+
+            if (playerComponents == null)
+                return;
+
+            OnItemPicked?.Invoke(this);
+        }
+    }
 }

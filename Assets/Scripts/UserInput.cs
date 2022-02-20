@@ -3,18 +3,21 @@ using UnityEngine.EventSystems;
 
 namespace TestProject
 {
-	[RequireComponent(typeof(EventSystem))]
-	public sealed class UserInput : MonoBehaviour
-	{
-		private EventSystem _eventSystem;
-		
-		public bool LeftMouseClick { get; private set; }
+    [RequireComponent(typeof(EventSystem))]
+    public sealed class UserInput : MonoBehaviour
+    {
+        private EventSystem _eventSystem;
 
-		private void Awake() => _eventSystem = GetComponent<EventSystem>();
+        public bool LeftMouseClick { get; private set; }
 
-		private void Update()
-		{
-			LeftMouseClick = Input.GetMouseButtonDown(0);
-		}
-	}
+        private void Awake()
+        {
+            _eventSystem = GetComponent<EventSystem>();
+        }
+
+        private void Update()
+        {
+            LeftMouseClick = Input.GetMouseButtonDown(0);
+        }
+    }
 }

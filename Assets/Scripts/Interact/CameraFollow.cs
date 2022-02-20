@@ -12,7 +12,7 @@ namespace TestProject.Interact
 
         private void Update()
         {
-            if (_target == null) 
+            if (_target == null)
                 return;
 
             _targetPos = _target.position + _offset;

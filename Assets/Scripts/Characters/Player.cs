@@ -1,60 +1,62 @@
 ﻿using TestProject.Common;
-using TestProject.Interact;
 using TestProject.Resources;
 using UnityEngine;
 using UnityEngine.AI;
 
 namespace TestProject.Characters
 {
-	[RequireComponent(typeof(NavMeshAgent))]
-	public sealed class Player : MonoBehaviour
-	{
-		private readonly Inventory _inventory = new Inventory();
-		
-		[SerializeField] private HealthInfo _health;
-		[SerializeField] private ColliderTrigger2D _collider;
-		private NavMeshAgent _navMeshAgent;
-		private Camera _camera;
-		private Vector2 _destination;
-		private bool _isMoveing;
-		private UserInput _input;
+    [RequireComponent(typeof(NavMeshAgent))]
+    public sealed class Player : MonoBehaviour
+    {
+        [SerializeField] private HealthInfo _health;
+        private NavMeshAgent _navMeshAgent;
+        private Vector2 _destination;
+        private bool _isMoveing;
 
-		public HealthInfo Health => _health;
-		public Inventory Inventory => _inventory;
+        public HealthInfo Health => _health;
+        
+        public Inventory Inventory { get; } = new Inventory();
 
-		private void Awake()
-		{
-			_destination = transform.position;
-			_camera = Camera.main;
-			_input = FindObjectOfType<UserInput>();
-			_navMeshAgent = GetComponent<NavMeshAgent>();
-			_navMeshAgent.updateRotation = false;
-			_navMeshAgent.updateUpAxis = false;
-		}
+        private static Camera Camera
+            => ProjectContext.Instance.GameplayCamera;
+        
+        private static bool IsLeftMouseClicked 
+            => ProjectContext.Instance.Input.LeftMouseClick;
 
-		private void Update()
-		{
-			if (_input.LeftMouseClick)
-			{
-				_destination = _camera.ScreenToWorldPoint(Input.mousePosition);
-				_isMoveing = true;
-			}
-			
-			if(_isMoveing == false)
-				return;
+        private void Awake()
+        {
+            _destination = transform.position;
+            _navMeshAgent = GetComponent<NavMeshAgent>();
+            _navMeshAgent.updateRotation = false;
+            _navMeshAgent.updateUpAxis = false;
+        }
 
-			if (transform.position.Equals(_destination))
-				_isMoveing = false;
+        private void Update()
+        {
+            if (IsLeftMouseClicked)
+            {
+                _destination = Camera.ScreenToWorldPoint(Input.mousePosition);
+                _isMoveing = true;
+            }
 
-			_navMeshAgent.SetDestination(_destination);
-		}
+            if (_isMoveing == false)
+                return;
 
-		public void SetDamage(DamageInfo damage) => _health.Decrease(damage.Amount);
+            if (transform.position.Equals(_destination))
+                _isMoveing = false;
 
-		public void PickUpItem(Item item)
-		{
-			_inventory.AddItem(item);
-			Health.Increase(item.ItemData.HealthPoints);
-		}
-	}
+            _navMeshAgent.SetDestination(_destination);
+        }
+
+        public void SetDamage(DamageInfo damage)
+        {
+            _health.Decrease(damage.Amount);
+        }
+
+        public void PickUpItem(Item item)
+        {
+            Inventory.AddItem(item);
+            Health.Increase(item.ItemData.HealthPoints);
+        }
+    }
 }
